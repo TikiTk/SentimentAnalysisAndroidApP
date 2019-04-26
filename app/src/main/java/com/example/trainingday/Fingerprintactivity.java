@@ -7,14 +7,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.scottyab.rootbeer.RootBeer;
+
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -24,49 +28,56 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 
-
 public class Fingerprintactivity extends AppCompatActivity {
-
-    private KeyStore keyStore;
     private static final String KEY_NAME = "TrainingDay";
     private Cipher cipher;
+    private KeyStore keyStore;
     private TextView textView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fingerprint);
 
+        RootBeer rootBeer = new RootBeer(getBaseContext());
+        if (rootBeer.isRooted()) {
+            Toast.makeText(getBaseContext(), "Device is rooted", Toast.LENGTH_LONG).show();
+//            System.exit(0);
 
-        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-        FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+        } else {
 
-        textView = (TextView) findViewById(R.id.errorText);
+            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+            FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
 
-        if(!fingerprintManager.isHardwareDetected())
-            textView.setText("Your device does not support fingerprint scanning");
-        else{
-            if(ActivityCompat.checkSelfPermission(this,Manifest.permission.USE_FINGERPRINT)!= PackageManager.PERMISSION_GRANTED)
-                textView.setText("FIngerprint permission not granted");
-            else{
-                if(!fingerprintManager.hasEnrolledFingerprints())
-                    textView.setText("Register at least one fingerprint");
-                else{
-                    if(!keyguardManager.isKeyguardSecure())
-                        textView.setText("Lock screen security has not been enabled");
-                    else{
-                        generateKey();
+            textView = findViewById(R.id.errorText);
 
-                        if(cipherInit()){
-                            FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
-                            FingerprintHandler helper = new FingerprintHandler(this);
-                            helper.startAuth(fingerprintManager, cryptoObject);
+            if (!fingerprintManager.isHardwareDetected())
+                textView.setText("Your device does not support fingerprint scanning");
+            else {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED)
+                    textView.setText("FIngerprint permission not granted");
+                else {
+                    if (!fingerprintManager.hasEnrolledFingerprints())
+                        textView.setText("Register at least one fingerprint");
+                    else {
+                        if (!keyguardManager.isKeyguardSecure())
+                            textView.setText("Lock screen security has not been enabled");
+                        else {
+                            generateKey();
+
+                            if (cipherInit()) {
+                                FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
+                                FingerprintHandler helper = new FingerprintHandler(this);
+                                helper.startAuth(fingerprintManager, cryptoObject);
+                            }
                         }
                     }
                 }
@@ -102,25 +113,25 @@ public class Fingerprintactivity extends AppCompatActivity {
 
     }
 
-        @TargetApi(Build.VERSION_CODES.M)
-        public boolean cipherInit(){
-            try{
-                cipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/" + KeyProperties.BLOCK_MODE_CBC + "/" + KeyProperties.ENCRYPTION_PADDING_PKCS7);
-            }catch(NoSuchAlgorithmException  | NoSuchPaddingException e){
-                throw new RuntimeException("Failed to get Cipher",e);
-            }
-
-            try{
-                keyStore.load(null);
-                SecretKey key = (SecretKey) keyStore.getKey(KEY_NAME,null);
-                cipher.init(Cipher.ENCRYPT_MODE,key);
-                return true;
-            }catch (KeyPermanentlyInvalidatedException e) {
-                return false;
-            }catch(KeyStoreException | CertificateException | UnrecoverableKeyException | IOException | NoSuchAlgorithmException | InvalidKeyException e){
-                throw new RuntimeException("Failed to init Cipher",e);
-            }
+    @TargetApi(Build.VERSION_CODES.M)
+    public boolean cipherInit() {
+        try {
+            cipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/" + KeyProperties.BLOCK_MODE_CBC + "/" + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new RuntimeException("Failed to get Cipher", e);
         }
+
+        try {
+            keyStore.load(null);
+            SecretKey key = (SecretKey) keyStore.getKey(KEY_NAME, null);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return true;
+        } catch (KeyPermanentlyInvalidatedException e) {
+            return false;
+        } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException("Failed to init Cipher", e);
+        }
+    }
 
 
     public void passwordAuth(View view) {

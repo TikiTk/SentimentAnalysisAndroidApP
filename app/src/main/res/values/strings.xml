@@ -13,11 +13,7 @@
         completions."
     </string>
     <string name="title_fingerprint">Fingerprint Sign In</string>
-    <string name="title_activity_home">Fingerprint</string>
-    <string name="activity_home_desc">You have successfully authenticated with your fingerprint</string>
-    <string name="activity_home_note">Retry authentication by closing the app and opening it again</string>
     <string name="desc_fingerprint">Please place your fingertip on the scanner to verify your identity</string>
-    <string name="desc_passwordlogin">Or click the button for password login</string>
     <string name="note">Made by the Kremlin Gremlin</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
@@ -110,5 +106,4 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <string name="action_settings">Settings</string>
 </resources>

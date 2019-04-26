@@ -40,18 +40,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/message"
-        android:layout_marginTop="294dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="53dp"
         android:layout_marginLeft="50dp"
+        android:layout_marginTop="294dp"
+        android:onClick="onClick"
         android:padding="16dp"
-        android:text="Submit"
-        android:onClick ="onClick"/>
+        android:text="Submit" />
+
     <Button
         android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/message"
-        android:layout_marginTop="294dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginLeft="270dp"
+        android:layout_marginTop="294dp"
+        android:layout_marginEnd="53dp"
         android:padding="16dp"
         android:text="Save" />
 

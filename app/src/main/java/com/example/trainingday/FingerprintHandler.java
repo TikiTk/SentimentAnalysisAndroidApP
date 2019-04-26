@@ -14,47 +14,47 @@ import android.widget.TextView;
 public class FingerprintHandler extends FingerprintManager.AuthenticationCallback {
     private Context context;
 
-    public FingerprintHandler(Context mContent){
+    public FingerprintHandler(Context mContent) {
         context = mContent;
     }
 
 
-    public void startAuth(FingerprintManager manager, FingerprintManager.CryptoObject cryptoObject){
-        CancellationSignal cancellationSignal = new CancellationSignal() ;
-        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED){
+    public void startAuth(FingerprintManager manager, FingerprintManager.CryptoObject cryptoObject) {
+        CancellationSignal cancellationSignal = new CancellationSignal();
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         manager.authenticate(cryptoObject, cancellationSignal, 0, this, null);
     }
 
     @Override
-    public void onAuthenticationError(int errMsgId, CharSequence errString){
+    public void onAuthenticationError(int errMsgId, CharSequence errString) {
         this.update("Finger Authentication error\n" + errString, false);
     }
 
     @Override
-    public void onAuthenticationHelp(int helpMsgID, CharSequence helpString){
-        this.update("Fingerprint Authentication help\n"+helpString, false);
+    public void onAuthenticationHelp(int helpMsgID, CharSequence helpString) {
+        this.update("Fingerprint Authentication help\n" + helpString, false);
     }
 
     @Override
-    public void onAuthenticationFailed(){
+    public void onAuthenticationFailed() {
         this.update("Fingerprint Authentication failed", false);
     }
 
     @Override
-    public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result){
+    public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
 //        this.update("Fingerprint Authentication succeeded", true);
         Intent intent = new Intent(context, HomeActivity.class);
         context.startActivity(intent);
 
     }
 
-    public void update(String e, Boolean success ){
-        TextView textView = (TextView) ((Activity)context).findViewById(R.id.errorText);
+    public void update(String e, Boolean success) {
+        TextView textView = ((Activity) context).findViewById(R.id.errorText);
         textView.setText(e);
-        if(success){
-            textView.setTextColor(ContextCompat.getColor(context,R.color.colorPrimaryDark));
+        if (success) {
+            textView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
         }
     }
 

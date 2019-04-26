@@ -11,51 +11,52 @@ import android.widget.Toast;
 
 import com.example.trainingday.database.Sentiments;
 import com.example.trainingday.database.SentimentsDatabase;
+import com.scottyab.rootbeer.RootBeer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
-import static android.arch.persistence.room.Room.*;
+import static android.arch.persistence.room.Room.databaseBuilder;
 
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
+    static final String DB_NAME = " Sentiments_db";
     private Button button;
     private Button saveBtn;
-    static final String DB_NAME = " Sentiments_db";
     private SentimentsDatabase sentimentsDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        RootBeer rootBeer = new RootBeer(getBaseContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        button = findViewById(R.id.submit);
-        button.setOnClickListener(this);
-
-        saveBtn = findViewById(R.id.save);
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveToFile();
-                Intent intent = new Intent(HomeActivity.this,ScrollingActivity.class);
-                HomeActivity.this.startActivity(intent);
-            }
-        });
+        if (rootBeer.isRooted()) {
+            Toast.makeText(getBaseContext(), "Device is rooted", Toast.LENGTH_LONG).show();
+//            System.exit(0);
 
 
+        } else {
+
+            button = findViewById(R.id.submit);
+            button.setOnClickListener(this);
+
+            saveBtn = findViewById(R.id.save);
+            saveBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    saveToFile();
+                    Intent intent = new Intent(HomeActivity.this, ScrollingActivity.class);
+                    HomeActivity.this.startActivity(intent);
+                }
+            });
+
+
+        }
     }
 
-
     @Override
-    public void onClick(View view){
+    public void onClick(View view) {
         EditText editText = findViewById(R.id.message);
         String textToAnalyse = editText.getText().toString();
 
@@ -64,15 +65,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         String text = null;
         try {
-            text = URLEncoder.encode(textToAnalyse,"UTF-8");
+            text = URLEncoder.encode(textToAnalyse, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String url = String.format("https://aylien-text.p.rapidapi.com/sentiment?text=%s",text);
+        String url = String.format("https://aylien-text.p.rapidapi.com/sentiment?text=%s", text);
 
-       new HttpRequests(textView,this).execute(url);
+        new HttpRequests(textView, this).execute(url);
 
     }
+
     private void saveToFile() {
         final EditText editText = findViewById(R.id.save_file);
         TextView textView = findViewById(R.id.sentiment);
