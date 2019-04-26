@@ -39,7 +39,7 @@ public class HttpRequests extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(strings[0]);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("X-RapidAPI-Key","55fe9e8845msh951c486382b46ffp12db9ajsn140970b1b7db");
+            urlConnection.setRequestProperty("X-RapidAPI-Key","<Replace with your own key to access API>");
             urlConnection.setRequestProperty("X-RapidAPI-Host","aylien-text.p.rapidapi.com");
             InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
