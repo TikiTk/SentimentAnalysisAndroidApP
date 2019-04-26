@@ -1,5 +1,6 @@
 package com.example.trainingday;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.text.Html;
@@ -22,10 +23,11 @@ import java.util.Map;
 
 public class HttpRequests extends AsyncTask<String, Void, String> {
 
-    private  TextView textView;
+    @SuppressLint("StaticFieldLeak")
+    private TextView textView;
     private ProgressDialog dialog;
 
-    public HttpRequests(TextView textView, HomeActivity homeActivity){
+    HttpRequests(TextView textView, HomeActivity homeActivity){
         dialog = new ProgressDialog(homeActivity);
         this.textView = textView;
     }
@@ -39,7 +41,7 @@ public class HttpRequests extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(strings[0]);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("X-RapidAPI-Key","55fe9e8845msh951c486382b46ffp12db9ajsn140970b1b7db");
+            urlConnection.setRequestProperty("X-RapidAPI-Key",BuildConfig.KEY);
             urlConnection.setRequestProperty("X-RapidAPI-Host","aylien-text.p.rapidapi.com");
             InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
@@ -52,8 +54,8 @@ public class HttpRequests extends AsyncTask<String, Void, String> {
             JSONObject topLevel = new JSONObject(builder.toString());
             String polarity =  topLevel.getString("polarity");
             String subjectivity = topLevel.getString("subjectivity");
-            Double polarity_confidence = topLevel.getDouble("polarity_confidence");
-            Double subjectivity_confidence = topLevel.getDouble("subjectivity_confidence");
+            double polarity_confidence = topLevel.getDouble("polarity_confidence");
+            double subjectivity_confidence = topLevel.getDouble("subjectivity_confidence");
             results ="<b>Polarity</b> &nbsp;&nbsp;&nbsp;"+polarity+"<br/><b>Subjectivity</b> &nbsp;&nbsp;&nbsp;"+subjectivity+"<br/><b>Polarity confidence</b> &nbsp;&nbsp;&nbsp;"+polarity_confidence+"<br/><b>Subjectivity confidence</b> &nbsp;&nbsp;&nbsp;"+subjectivity_confidence;
 
 
